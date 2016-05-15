@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -91,6 +91,8 @@ enum hal_extradata_id {
 	HAL_EXTRADATA_FRAME_RATE,
 	HAL_EXTRADATA_PANSCAN_WINDOW,
 	HAL_EXTRADATA_RECOVERY_POINT_SEI,
+	HAL_EXTRADATA_CLOSED_CAPTION_UD,
+	HAL_EXTRADATA_AFD_UD,
 	HAL_EXTRADATA_MULTISLICE_INFO,
 	HAL_EXTRADATA_INDEX,
 	HAL_EXTRADATA_NUM_CONCEALED_MB,

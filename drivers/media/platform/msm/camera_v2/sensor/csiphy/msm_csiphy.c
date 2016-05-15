@@ -22,6 +22,7 @@
 #include "msm_csiphy_hwreg.h"
 #include "msm_camera_io_util.h"
 #define DBG_CSIPHY 0
+//#define CONFIG_MSMB_CAMERA_DEBUG
 
 #define V4L2_IDENT_CSIPHY                        50003
 #define CSIPHY_VERSION_V22                        0x01
@@ -44,9 +45,9 @@ static int msm_csiphy_lane_config(struct csiphy_device *csiphy_dev,
 	uint32_t val = 0;
 	uint8_t lane_cnt = 0;
 	uint16_t lane_mask = 0;
-	uint16_t irq2 = 0;
 	void __iomem *csiphybase;
 	uint8_t csiphy_id = csiphy_dev->pdev->id;
+	uint16_t irq2 = 0;
 	csiphybase = csiphy_dev->base;
 	if (!csiphybase) {
 		pr_err("%s: csiphybase NULL\n", __func__);
@@ -131,23 +132,24 @@ static int msm_csiphy_lane_config(struct csiphy_device *csiphy_dev,
 #if defined (CONFIG_HI351) || defined (CONFIG_HI543) || defined (CONFIG_HI544) || defined (CONFIG_HI841)
 	pr_err("%s padding the offset\n", __func__);
 	if(csiphy_dev->pdev->id == 0){//main camera
-		if(csiphy_dev->hw_version < CSIPHY_VERSION_V30){        //8x10, hi351
+		if(csiphy_dev->hw_version < CSIPHY_VERSION_V30){	//8x10, hi351
+			msm_camera_io_w(0xc, csiphy_dev->base + MIPI_CSIPHY_LNCK_CFG4_ADDR);			/*LGE_CHANGE, change 0x28->0xc(recommended value from hynix), 2014-02-05, kwangsik83.kim@lge.com*/
 			irq2 = msm_camera_io_r(csiphy_dev->base + MIPI_CSIPHY_LNCK_CFG4_ADDR);
 			pr_err("%s MIPI_CSIPHY_LNCK_CFG4_ADDR = 0x%x hw_ver : 0x%x\n", __func__, irq2, csiphy_dev->hw_version);
-
-			msm_camera_io_w(40, csiphy_dev->base + MIPI_CSIPHY_LNCK_CFG4_ADDR);
-		}else{  //8x26, hi543
-			irq2 = msm_camera_io_r(csiphy_dev->base + MIPI_CSIPHY_LNn_CFG4_ADDR);
+		}else{	//8x26, hi543
+			msm_camera_io_w(0xc, csiphy_dev->base + MIPI_CSIPHY_LNn_CFG4_ADDR + 0x40);		/*LGE_CHANGE, change mipi_clk's address, 2014-02-05, kwangsik83.kim@lge.com*/
+			irq2 = msm_camera_io_r(csiphy_dev->base + MIPI_CSIPHY_LNn_CFG4_ADDR + 0x40);
 			pr_err("%s MIPI_CSIPHY_LNn_CFG4_ADDR = 0x%x hw_ver : 0x%x\n", __func__, irq2, csiphy_dev->hw_version);
-
-			msm_camera_io_w(40, csiphy_dev->base + MIPI_CSIPHY_LNn_CFG4_ADDR);
 		}
 	}else{
 		irq2 = 0;
-		}
+	}
 #else
 	irq2 = 0;
 #endif
+/*LGE_CHANGE_E, seperately.. use csiphy register depend on csiphy_ver, 2013-10-15, kwangsik83.kim@lge.com*/
+/*LGE_CHANGE_E, qct_patch for fixing abnormal signal in tclk_trail section, 2013-03-14, kwangsik83.kim@lge.com*/
+
 
 	return rc;
 }
@@ -198,12 +200,13 @@ static struct msm_cam_clk_info csiphy_8960_clk_info[] = {
 	{"csiphy_timer_src_clk", 177780000},
 	{"csiphy_timer_clk", -1},
 };
-
+/*LGE_CHANGE_S, By QCT SR#01360225, this is added by youngwook.song@lge.com 2013.11.16 */ /* LGE_CHANGE, jaehan.jeong, 2013.11.29, Applied on msm8x10*/
 static struct msm_cam_clk_info csiphy_8610_clk_info[] = {
 	{"csiphy_timer_src_clk", 200000000},
 	{"csiphy_timer_clk", -1},
 	{"csi_ahb_clk", -1},
 };
+/*LGE_CHANGE_E, By QCT SR#01360225, this is added by youngwook.song@lge.com 2013.11.16 */
 
 static struct msm_cam_clk_info csiphy_8974_clk_info[] = {
 	{"camss_top_ahb_clk", -1},
