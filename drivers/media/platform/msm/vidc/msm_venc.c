@@ -140,7 +140,7 @@ enum msm_venc_ctrl_cluster {
 	MSM_VENC_CTRL_CLUSTER_VP8_PROFILE_LEVEL = 1 << 10,
 	MSM_VENC_CTRL_CLUSTER_DEINTERLACE = 1 << 11,
 	MSM_VENC_CTRL_CLUSTER_USE_LTRFRAME = 1 << 12,
-	MSM_VENC_CTRL_CLUSTER_MAX = 1 << 13,
+	MSM_VENC_CTRL_CLUSTER_MAX = 1 << 12,
 };
 
 static struct msm_vidc_ctrl msm_venc_ctrls[] = {
