@@ -1206,6 +1206,10 @@ void touch_send_wakeup(void *info)
 	if (ts->pdata->send_lpwg == LPWG_DOUBLE_TAP) {
 		kobject_uevent_env(&lge_touch_sys_device.kobj, KOBJ_CHANGE, lpwg_uevent[0]);
 		TOUCH_DEBUG_MSG( "uevent[%s]\n", lpwg_uevent[0][0]);
+/* Send a KEY_WAKEUP event to wake up the device, as there is no service listening to the kernel uevents created here. This will be helpful in a future M upgrade. Multitap events are not supported at this time, so we do not change that code yet.*/
+		input_report_key(ts->input_dev, KEY_WAKEUP, BUTTON_PRESSED);
+		input_report_key(ts->input_dev, KEY_WAKEUP, BUTTON_RELEASED);
+		input_sync(ts->input_dev);
 	} else if (ts->pdata->send_lpwg == LPWG_MULTI_TAP) {
 	     kobject_uevent_env(&lge_touch_sys_device.kobj, KOBJ_CHANGE, lpwg_uevent[1]);
 		TOUCH_DEBUG_MSG( "uevent[%s]\n", lpwg_uevent[1][0]);
@@ -2273,6 +2277,10 @@ static int touch_input_init(struct lge_touch_data *ts)
 	set_bit(EV_SYN, dev->evbit);
 	set_bit(EV_ABS, dev->evbit);
 	set_bit(INPUT_PROP_DIRECT, dev->propbit);
+	set_bit(EV_KEY, dev->evbit);
+	set_bit(KEY_WAKEUP, dev->keybit);
+	
+	
 
 	if (ts_caps->button_support && ts_role->key_type != VIRTUAL_KEY) {
 		set_bit(EV_KEY, dev->evbit);
